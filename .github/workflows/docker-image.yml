@@ -29,17 +29,18 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
+    - name: Build Docker Image (Step 3)
+      env:
         NEW_VERSION: ${{ steps.myversion.outputs.version }}
       run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        echo "New version: $NEW_VERSION !!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        docker build -t lypthusdev/docker-graphql:$NEW_VERSION .
+        docker build -t lypthusdev/docker-graphql:latest .
         
-    # - name: Build Docker Image (Step 3)
-    #   run: |
-    #     docker build -t lypthusdev/docker-graphql:0.0.2 .
-    #     docker build -t lypthusdev/docker-graphql:latest .
-        
-    # - name: Push Docker Image (Step 4)
-    #   run: |
-    #     docker push lypthusdev/docker-graphql:0.0.2
-    #     docker push lypthusdev/docker-graphql:latest
+    - name: Push Docker Image (Step 4)
+      env:
+        NEW_VERSION: ${{ steps.myversion.outputs.version }}
+      run: |
+        docker push lypthusdev/docker-graphql:$NEW_VERSION
+        docker push lypthusdev/docker-graphql:latest
